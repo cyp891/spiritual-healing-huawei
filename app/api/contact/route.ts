@@ -1,8 +1,11 @@
 import { Resend } from "resend"
+import { ContactEmailTemplate } from "@/components/email-templates/contact-email"
+import { AdminNotificationEmail } from "@/components/email-templates/admin-notification"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const ADMIN_EMAIL = "hello@serenity-wellness.com"
+const ADMIN_EMAIL = "cyp892@yahoo.com"
+const FROM_EMAIL = "cyp893@yahoo.com"
 
 export async function POST(request: Request) {
   try {
@@ -14,8 +17,27 @@ export async function POST(request: Request) {
 
     console.log("[v0] Contact form submission:", { name, email, message })
 
-    // For now, just log the submission
-    // In production, integrate with your email service
+    const userEmailHtml = ContactEmailTemplate({ name, message })
+    const userEmail = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: email,
+      subject: "We received your message - Serenity Wellness",
+      html: userEmailHtml,
+    })
+
+    const adminEmailHtml = AdminNotificationEmail({ name, email, message })
+    const adminEmail = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: ADMIN_EMAIL,
+      subject: `New Contact Form Message from ${name}`,
+      html: adminEmailHtml,
+    })
+
+    if (userEmail.error || adminEmail.error) {
+      console.error("[v0] Email sending error:", userEmail.error || adminEmail.error)
+      return Response.json({ error: "Failed to send confirmation email" }, { status: 500 })
+    }
+
     return Response.json({
       success: true,
       message: "Thank you for your message. We will get back to you soon!",

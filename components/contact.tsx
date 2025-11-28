@@ -33,8 +33,8 @@ export default function Contact() {
       icon: <Mail size={32} />,
       title: "Email",
       description: "Send us an email",
-      value: "hello@serenity-wellness.com",
-      action: "mailto:hello@serenity-wellness.com",
+      value: "hcyp892@yahoo.com",
+      action: "mailto:cyp892@yahoo.com",
       buttonText: "Email Us",
     },
     {

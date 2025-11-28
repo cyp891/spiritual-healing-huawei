@@ -1,8 +1,10 @@
 import { Resend } from "resend"
+import { BookingConfirmationEmail } from "@/components/email-templates/booking-confirmation"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const ADMIN_EMAIL = "hello@serenity-wellness.com"
+const ADMIN_EMAIL = "cyp892@otenet.gr"
+const FROM_EMAIL = "cyp893@yahoo.com"
 
 export async function POST(request: Request) {
   try {
@@ -14,30 +16,38 @@ export async function POST(request: Request) {
 
     console.log("[v0] Booking submission:", { name, email, phone, service, date, time })
 
-    // For now, just log the submission
-    // In production, integrate with your email service and database
+    const userEmailHtml = BookingConfirmationEmail({ name, service, date, time })
+    const userEmail = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: email,
+      subject: "Booking Confirmation - Serenity Wellness",
+      html: userEmailHtml,
+    })
 
-    // const userEmail = await resend.emails.send({
-    //   from: "Serenity Wellness <noreply@serenity-wellness.com>",
-    //   to: email,
-    //   subject: "Booking Confirmation - Serenity Wellness",
-    //   react: BookingConfirmationEmail({ name, service, date, time }),
-    // })
+    const adminEmailHtml = BookingConfirmationEmail({
+      name,
+      service,
+      date,
+      time,
+      isAdmin: true,
+      clientEmail: email,
+      phone,
+    })
+    const adminEmail = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: ADMIN_EMAIL,
+      subject: `New Booking: ${service} - ${date} at ${time}`,
+      html: adminEmailHtml,
+    })
 
-    // const adminEmail = await resend.emails.send({
-    //   from: "Serenity Wellness <noreply@serenity-wellness.com>",
-    //   to: ADMIN_EMAIL,
-    //   subject: `New Booking: ${service} - ${date} at ${time}`,
-    //   react: BookingConfirmationEmail({ name, service, date, time, isAdmin: true, clientEmail: email, phone }),
-    // })
-
-    // if (userEmail.error || adminEmail.error) {
-    //   return Response.json({ error: "Failed to send confirmation" }, { status: 500 })
-    // }
+    if (userEmail.error || adminEmail.error) {
+      console.error("[v0] Email sending error:", userEmail.error || adminEmail.error)
+      return Response.json({ error: "Failed to send confirmation email" }, { status: 500 })
+    }
 
     return Response.json({
       success: true,
-      message: "Booking confirmed! We will send you a confirmation email shortly.",
+      message: "Booking confirmed! Check your email for confirmation details.",
     })
   } catch (error) {
     console.error("[v0] Booking error:", error)
