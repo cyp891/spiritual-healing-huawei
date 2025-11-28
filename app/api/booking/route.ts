@@ -1,10 +1,18 @@
-import { Resend } from "resend"
+import nodemailer from "nodemailer"
 import { BookingConfirmationEmail } from "@/components/email-templates/booking-confirmation"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number.parseInt(process.env.SMTP_PORT || "587"),
+  secure: process.env.SMTP_SECURE === "true",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD,
+  },
+})
 
-const ADMIN_EMAIL = "onboarding@resend.dev"
-const FROM_EMAIL = "onboarding@resend.dev"
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@serenity-wellness.com"
+const FROM_EMAIL = process.env.SMTP_FROM || "noreply@serenity-wellness.com"
 
 export async function POST(request: Request) {
   try {
@@ -17,13 +25,6 @@ export async function POST(request: Request) {
     console.log("[v0] Booking submission:", { name, email, phone, service, date, time })
 
     const userEmailHtml = BookingConfirmationEmail({ name, service, date, time })
-    const userEmail = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: email,
-      subject: "Booking Confirmation - Serenity Wellness",
-      html: userEmailHtml,
-    })
-
     const adminEmailHtml = BookingConfirmationEmail({
       name,
       service,
@@ -33,17 +34,21 @@ export async function POST(request: Request) {
       clientEmail: email,
       phone,
     })
-    const adminEmail = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: ADMIN_EMAIL,
-      subject: `New Booking: ${service} - ${date} at ${time}`,
-      html: adminEmailHtml,
-    })
 
-    if (userEmail.error || adminEmail.error) {
-      console.error("[v0] Email sending error:", userEmail.error || adminEmail.error)
-      return Response.json({ error: "Failed to send confirmation email" }, { status: 500 })
-    }
+    await Promise.all([
+      transporter.sendMail({
+        from: FROM_EMAIL,
+        to: email,
+        subject: "Booking Confirmation - Serenity Wellness",
+        html: userEmailHtml,
+      }),
+      transporter.sendMail({
+        from: FROM_EMAIL,
+        to: ADMIN_EMAIL,
+        subject: `New Booking: ${service} - ${date} at ${time}`,
+        html: adminEmailHtml,
+      }),
+    ])
 
     return Response.json({
       success: true,
