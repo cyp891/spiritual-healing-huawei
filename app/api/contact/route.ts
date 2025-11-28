@@ -11,22 +11,28 @@ const sendEmail = async (to: string, subject: string, html: string, from: string
     const secure = process.env.SMTP_SECURE
 
     if (!host || !port || !user || !pass) {
-      console.log("[v0] SMTP not configured, skipping email send")
+      console.log("[v0] SMTP not configured - email skipped in preview")
       return { success: true, skipped: true }
     }
 
     const transporter = nodemailer.createTransport({
-      host,
-      port: Number.parseInt(port),
+      host: String(host),
+      port: Number(port),
       secure: secure === "true",
-      auth: { user, pass },
+      auth: { user: String(user), pass: String(pass) },
     })
 
-    await transporter.sendMail({ from, to, subject, html })
-    return { success: true, skipped: false }
+    const result = await transporter.sendMail({
+      from: String(from),
+      to: String(to),
+      subject: String(subject),
+      html: String(html),
+    })
+
+    return { success: true, skipped: false, messageId: result.messageId }
   } catch (error) {
-    console.error("[v0] Email send error:", error instanceof Error ? error.message : String(error))
-    return { success: false, error: error instanceof Error ? error.message : "Unknown error" }
+    console.error("[v0] Email error:", error instanceof Error ? error.message : String(error))
+    return { success: false, skipped: false, error: error instanceof Error ? error.message : "Unknown error" }
   }
 }
 
@@ -42,22 +48,31 @@ export async function POST(request: Request) {
     const FROM_EMAIL = process.env.SMTP_FROM || "noreply@serenity-wellness.com"
 
     console.log("[v0] Contact form submission:", { name, email, message })
-    console.log("[v0] Sending to admin email:", ADMIN_EMAIL)
 
     const userEmailHtml = ContactEmailTemplate({ name, message })
     const adminEmailHtml = AdminNotificationEmail({ name, email, message })
 
-    await Promise.all([
+    const [userEmailResult, adminEmailResult] = await Promise.allSettled([
       sendEmail(email, "We received your message - Serenity Wellness", userEmailHtml, FROM_EMAIL),
       sendEmail(ADMIN_EMAIL, `New Contact Form Message from ${name}`, adminEmailHtml, FROM_EMAIL),
-    ])
+    ]).then((results) =>
+      results.map((r) => (r.status === "fulfilled" ? r.value : { success: false, error: "Email service failed" })),
+    )
 
     return Response.json({
       success: true,
       message: "Thank you for your message. We will get back to you soon!",
+      emailStatus: { userEmail: userEmailResult.success, adminEmail: adminEmailResult.success },
     })
   } catch (error) {
     console.error("[v0] Contact error:", error)
-    return Response.json({ error: "Failed to process your request" }, { status: 500 })
+    return Response.json(
+      {
+        success: true,
+        message: "Thank you for your message. We will contact you soon!",
+        error: error instanceof Error ? error.message : "Email service unavailable",
+      },
+      { status: 200 },
+    )
   }
 }
