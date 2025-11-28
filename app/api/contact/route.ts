@@ -11,8 +11,8 @@ const sendEmail = async (to: string, subject: string, html: string, from: string
     const secure = process.env.SMTP_SECURE
 
     if (!host || !port || !user || !pass) {
-      console.log("[v0] SMTP not configured - email skipped in preview")
-      return { success: true, skipped: true }
+      console.log("[v0] SMTP not configured - email skipped")
+      return { success: false, skipped: true }
     }
 
     const transporter = nodemailer.createTransport({
