@@ -9,7 +9,7 @@ interface ServicesProps {
 
 const services = [
   {
-    title: "Yoga Classes",
+    title: "Yoga",
     description: "From beginner to advanced, our yoga sessions improve flexibility, strength, and mental clarity.",
     icon: "🧘",
   },
@@ -20,22 +20,22 @@ const services = [
   },
   {
     title: "Energy Healing",
-    description: "Reiki and energy work to balance your chakras and restore vital life force energy.",
+    description: "Reiki and energy work to balance your chakras and restore vital life force energy. Believing in that can take a leap of faith.",
     icon: "💫",
   },
   {
-    title: "Breathwork & Pranayama",
-    description: "Ancient breathing techniques to oxygenate your body and elevate your consciousness.",
+    title: "Metaphorical cards",
+    description: "A versatile and effective tool for enhancing communication, promoting self-expression, and supporting the therapy.",
     icon: "🌬️",
   },
   {
     title: "Spiritual Counseling",
-    description: "Personalized guidance for spiritual growth and life transformation.",
+    description: "Personalized guidance for spiritual growth and life transformation. Rule of life provides structure and space for our growing.",
     icon: "🤝",
   },
   {
     title: "Wellness Retreats",
-    description: "Immersive experiences combining yoga, meditation, and holistic wellness practices.",
+    description: "Immersive experiences combining yoga, meditation, and holistic wellness practices. Approach to mental & physical well-being",
     icon: "🌿",
   },
 ]

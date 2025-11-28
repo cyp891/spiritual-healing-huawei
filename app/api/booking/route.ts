@@ -43,8 +43,8 @@ export async function POST(request: Request) {
       return Response.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@serenity-wellness.com"
-    const FROM_EMAIL = process.env.SMTP_FROM || "noreply@serenity-wellness.com"
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "cyp892@yahoo.com"
+    const FROM_EMAIL = process.env.SMTP_FROM || "noreply@test.com"
 
     console.log("[v0] Booking submission:", { name, email, phone, service, date, time, notes })
 
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     })
 
     const [userEmailResult, adminEmailResult] = await Promise.allSettled([
-      sendEmail(email, "Booking Confirmation - Serenity Wellness", userEmailHtml, FROM_EMAIL),
+      sendEmail(email, "Booking Confirmation - Spiritual Healing", userEmailHtml, FROM_EMAIL),
       sendEmail(ADMIN_EMAIL, `New Booking: ${service} - ${date} at ${time}`, adminEmailHtml, FROM_EMAIL),
     ]).then((results) =>
       results.map((r) => (r.status === "fulfilled" ? r.value : { success: false, error: "Email service failed" })),

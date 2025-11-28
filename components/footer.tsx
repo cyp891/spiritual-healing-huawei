@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">Serenity Wellness</h3>
+            <h3 className="text-xl font-bold mb-4">Spiritual Healing</h3>
             <p className="text-primary-foreground/80">
               Transforming lives through holistic spiritual healing and yoga practices.
             </p>
@@ -45,7 +45,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-primary-foreground/20 pt-8 text-center text-primary-foreground/60">
-          <p>&copy; 2025 Serenity Wellness. All rights reserved. | Privacy Policy | Terms of Service</p>
+          <p>&copy; 2025 Spiritual Healing. All rights reserved. | Privacy Policy | Terms of Service</p>
         </div>
       </div>
     </footer>

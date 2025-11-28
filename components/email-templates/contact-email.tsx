@@ -20,10 +20,10 @@ export function ContactEmailTemplate({ name, message }: { name: string; message:
 
       <div style="font-size: 14px; color: #666;">
         <p style="margin-bottom: 5px;">
-          <strong>Serenity Wellness</strong>
+          <strong>Spiritual Healing</strong>
         </p>
-        <p style="margin-bottom: 5px;">Email: hello@serenity-wellness.com</p>
-        <p style="margin-bottom: 5px;">Phone: +1 (555) 123-4567</p>
+        <p style="margin-bottom: 5px;">Email: hello@spiritualhealing.com</p>
+        <p style="margin-bottom: 5px;">Phone: +49 (555) 123-4567</p>
         <p>Bringing peace and healing to your life</p>
       </div>
     </div>

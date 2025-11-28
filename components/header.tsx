@@ -19,7 +19,7 @@ export default function Header({ onBookClick }: HeaderProps) {
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">✨</span>
             </div>
-            <h1 className="text-2xl font-bold text-primary hidden sm:block">Serenity</h1>
+            <h1 className="text-2xl font-bold text-primary hidden sm:block">Spiritual Healing</h1>
           </div>
 
           <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-lg border border-accent/20">

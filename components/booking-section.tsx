@@ -19,10 +19,10 @@ interface TimeSlot {
 }
 
 const services = [
-  { id: 1, name: "Yoga Class", duration: "60 min", price: "$45" },
-  { id: 2, name: "Meditation Session", duration: "45 min", price: "$35" },
-  { id: 3, name: "Energy Healing", duration: "90 min", price: "$75" },
-  { id: 4, name: "1:1 Spiritual Counseling", duration: "60 min", price: "$80" },
+  { id: 1, name: "1:1 Yoga", duration: "60 min", price: "€45" },
+  { id: 2, name: "1:1 Meditation Session", duration: "45 min", price: "€35" },
+  { id: 3, name: "1:1 Energy Healing", duration: "90 min", price: "€75" },
+  { id: 4, name: "1:1 Spiritual Counseling", duration: "60 min", price: "€80" },
 ]
 
 const generateTimeSlots = (): TimeSlot[] => {

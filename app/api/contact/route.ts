@@ -44,8 +44,8 @@ export async function POST(request: Request) {
       return Response.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@serenity-wellness.com"
-    const FROM_EMAIL = process.env.SMTP_FROM || "noreply@serenity-wellness.com"
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "cyp892@yahoo.com"
+    const FROM_EMAIL = process.env.SMTP_FROM || "noreply@stest.com"
 
     console.log("[v0] Contact form submission:", { name, email, message })
 
