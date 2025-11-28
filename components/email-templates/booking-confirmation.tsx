@@ -6,6 +6,7 @@ export function BookingConfirmationEmail({
   isAdmin = false,
   clientEmail,
   phone,
+  notes,
 }: {
   name: string
   service: string
@@ -14,6 +15,7 @@ export function BookingConfirmationEmail({
   isAdmin?: boolean
   clientEmail?: string
   phone?: string
+  notes?: string
 }): string {
   const details = `
     <p><strong>Client Name:</strong> ${name}</p>
@@ -22,6 +24,7 @@ export function BookingConfirmationEmail({
     <p><strong>Service:</strong> ${service}</p>
     <p><strong>Date:</strong> ${date}</p>
     <p><strong>Time:</strong> ${time}</p>
+    ${notes ? `<p><strong>Additional Notes:</strong></p><p style="white-space: pre-wrap; color: #555; background-color: #fff; padding: 10px; border-radius: 4px;">${notes.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>` : ""}
   `
 
   const mainContent = isAdmin

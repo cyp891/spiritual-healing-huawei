@@ -105,6 +105,7 @@ export default function BookingSection({ open, onOpenChange }: BookingSectionPro
             service: serviceName,
             date: dateString,
             time: selectedTime,
+            notes: formData.notes,
           }),
         })
 
