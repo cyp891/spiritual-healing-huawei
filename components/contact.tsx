@@ -33,7 +33,7 @@ export default function Contact() {
       icon: <Mail size={32} />,
       title: "Email",
       description: "Send us an email",
-      value: "hcyp892@yahoo.com",
+      value: "cyp892@yahoo.com",
       action: "mailto:cyp892@yahoo.com",
       buttonText: "Email Us",
     },

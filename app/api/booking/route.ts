@@ -4,7 +4,7 @@ import { BookingConfirmationEmail } from "@/components/email-templates/booking-c
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const ADMIN_EMAIL = "cyp892@otenet.gr"
-const FROM_EMAIL = "cyp893@yahoo.com"
+const FROM_EMAIL = "onboarding@resend.dev"
 
 export async function POST(request: Request) {
   try {

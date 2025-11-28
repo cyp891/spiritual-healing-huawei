@@ -5,7 +5,7 @@ import { AdminNotificationEmail } from "@/components/email-templates/admin-notif
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const ADMIN_EMAIL = "cyp892@yahoo.com"
-const FROM_EMAIL = "cyp893@yahoo.com"
+const FROM_EMAIL = "onboarding@resend.dev"
 
 export async function POST(request: Request) {
   try {
