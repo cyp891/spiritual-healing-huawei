@@ -2,26 +2,32 @@ import nodemailer from "nodemailer"
 import { ContactEmailTemplate } from "@/components/email-templates/contact-email"
 import { AdminNotificationEmail } from "@/components/email-templates/admin-notification"
 
-const createTransporter = () => {
-  const host = process.env.SMTP_HOST
-  const port = process.env.SMTP_PORT
-  const user = process.env.SMTP_USER
-  const pass = process.env.SMTP_PASSWORD
-  const secure = process.env.SMTP_SECURE
+const sendEmail = async (to: string, subject: string, html: string, from: string) => {
+  try {
+    const host = process.env.SMTP_HOST
+    const port = process.env.SMTP_PORT
+    const user = process.env.SMTP_USER
+    const pass = process.env.SMTP_PASSWORD
+    const secure = process.env.SMTP_SECURE
 
-  if (!host || !port || !user || !pass) {
-    throw new Error("Missing SMTP configuration")
+    if (!host || !port || !user || !pass) {
+      console.log("[v0] SMTP not configured, skipping email send")
+      return { success: true, skipped: true }
+    }
+
+    const transporter = nodemailer.createTransport({
+      host,
+      port: Number.parseInt(port),
+      secure: secure === "true",
+      auth: { user, pass },
+    })
+
+    await transporter.sendMail({ from, to, subject, html })
+    return { success: true, skipped: false }
+  } catch (error) {
+    console.error("[v0] Email send error:", error instanceof Error ? error.message : String(error))
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" }
   }
-
-  return nodemailer.createTransport({
-    host,
-    port: Number.parseInt(port),
-    secure: secure === "true",
-    auth: {
-      user,
-      pass,
-    },
-  })
 }
 
 export async function POST(request: Request) {
@@ -38,36 +44,13 @@ export async function POST(request: Request) {
     console.log("[v0] Contact form submission:", { name, email, message })
     console.log("[v0] Sending to admin email:", ADMIN_EMAIL)
 
-    const transporter = createTransporter()
-
     const userEmailHtml = ContactEmailTemplate({ name, message })
     const adminEmailHtml = AdminNotificationEmail({ name, email, message })
 
-    const userEmailPromise = transporter
-      .sendMail({
-        from: FROM_EMAIL,
-        to: email,
-        subject: "We received your message - Serenity Wellness",
-        html: userEmailHtml,
-      })
-      .catch((err) => {
-        console.error("[v0] Failed to send user email:", err.message)
-        throw err
-      })
-
-    const adminEmailPromise = transporter
-      .sendMail({
-        from: FROM_EMAIL,
-        to: ADMIN_EMAIL,
-        subject: `New Contact Form Message from ${name}`,
-        html: adminEmailHtml,
-      })
-      .catch((err) => {
-        console.error("[v0] Failed to send admin email to", ADMIN_EMAIL, ":", err.message)
-        throw err
-      })
-
-    await Promise.all([userEmailPromise, adminEmailPromise])
+    await Promise.all([
+      sendEmail(email, "We received your message - Serenity Wellness", userEmailHtml, FROM_EMAIL),
+      sendEmail(ADMIN_EMAIL, `New Contact Form Message from ${name}`, adminEmailHtml, FROM_EMAIL),
+    ])
 
     return Response.json({
       success: true,
