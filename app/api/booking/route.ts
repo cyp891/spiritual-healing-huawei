@@ -1,44 +1,27 @@
 import nodemailer from "nodemailer"
 import { BookingConfirmationEmail } from "@/components/email-templates/booking-confirmation"
 
-const validateSMTPConfig = () => {
-  const config = {
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-    secure: process.env.SMTP_SECURE,
-    adminEmail: process.env.ADMIN_EMAIL,
-    fromEmail: process.env.SMTP_FROM,
+const createTransporter = () => {
+  const host = process.env.SMTP_HOST
+  const port = process.env.SMTP_PORT
+  const user = process.env.SMTP_USER
+  const pass = process.env.SMTP_PASSWORD
+  const secure = process.env.SMTP_SECURE
+
+  if (!host || !port || !user || !pass) {
+    throw new Error("Missing SMTP configuration")
   }
 
-  console.log("[v0] SMTP Config check:", {
-    hasHost: !!config.host,
-    hasPort: !!config.port,
-    hasUser: !!config.user,
-    hasPass: !!config.pass,
-    hasSecure: !!config.secure,
-    hasAdminEmail: !!config.adminEmail,
-    hasFromEmail: !!config.fromEmail,
+  return nodemailer.createTransport({
+    host,
+    port: Number.parseInt(port),
+    secure: secure === "true",
+    auth: {
+      user,
+      pass,
+    },
   })
-
-  return config
 }
-
-const smtpConfig = validateSMTPConfig()
-
-const transporter = nodemailer.createTransport({
-  host: smtpConfig.host,
-  port: Number.parseInt(smtpConfig.port || "587"),
-  secure: smtpConfig.secure === "true",
-  auth: {
-    user: smtpConfig.user,
-    pass: smtpConfig.pass,
-  },
-})
-
-const ADMIN_EMAIL = smtpConfig.adminEmail || "admin@serenity-wellness.com"
-const FROM_EMAIL = smtpConfig.fromEmail || "noreply@serenity-wellness.com"
 
 export async function POST(request: Request) {
   try {
@@ -48,8 +31,13 @@ export async function POST(request: Request) {
       return Response.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@serenity-wellness.com"
+    const FROM_EMAIL = process.env.SMTP_FROM || "noreply@serenity-wellness.com"
+
     console.log("[v0] Booking submission:", { name, email, phone, service, date, time, notes })
     console.log("[v0] Sending to admin email:", ADMIN_EMAIL)
+
+    const transporter = createTransporter()
 
     const userEmailHtml = BookingConfirmationEmail({ name, service, date, time, notes })
     const adminEmailHtml = BookingConfirmationEmail({
